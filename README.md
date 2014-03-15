@@ -3,7 +3,7 @@ DpBayesianNet
 
 C liblary of the Bayesian network which was optimized by dynamic programming of Silander and Myllymaki(2006).  
 
-### install
+### Install
 You require cmake
 
 [Case of MinGW on Windows]  
