@@ -321,9 +321,7 @@ static double bayesianNetworkGetProbability(bayesianNetwork *model,int targetNod
 	valuePattern=Calloc(int,model->numNode);
 	double p1=getJointProbability(model,targetNode,targetValue,values,model->edge,nodes,0,valuePattern,model->numNode,0);
 	memset(valuePattern,0,sizeof(int)*model->numNode);
-	printf("p1:%.15lf\n",p1);
 	double p2=getJointProbability(model,-1,targetValue,values,model->edge,nodes,0,valuePattern,model->numNode,0);
-	printf("p2:%.15lf p1/p2:%.15lf\n",p2,p1/p2);
 	return p1/p2;
 }
 
@@ -341,7 +339,6 @@ int bayesianNetPredict(bayesianNetwork *model,int *values,int targetNode){
 	values[targetNode]=-1;
 	for(i=0;i<model->numValuePattern[targetNode];i++){
 		double prob=bayesianNetworkGetProbability(model,targetNode,i,values);
-		printf("final prob:%.15lf\n",prob);
 		if(prob > maxProb){
 			maxProb=prob;
 			maxIdx=i;
