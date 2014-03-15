@@ -6,7 +6,7 @@ C liblary of the Bayesian network which was optimized by dynamic programming of 
 ## Install
 You require cmake
 
-### [Case of MinGW on Windows]  
+**[Case of MinGW on Windows]**  
 1.Input this following on command prompt.  
 > PATH=C:\MinGW\bin;%PATH%  
 > cmake -G "MinGW Makefiles"  
