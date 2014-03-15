@@ -1,2 +1,0 @@
-C:/Users/yosuke/Documents/githubProject/DpBayesianNet/CMakeFiles/dpBayesianNet.dir
-C:/Users/yosuke/Documents/githubProject/DpBayesianNet/CMakeFiles/example.dir
