@@ -6,7 +6,6 @@
 #include "dpBayesianNetwork.h"
 
 
-
 /*
 	各ノードごとに取りうる全ての親パターンで学習スコアを計算する
 */
