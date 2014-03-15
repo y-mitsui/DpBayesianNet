@@ -1,8 +1,9 @@
 DpBayesianNet
 =============
 
-C liblary of the Bayesian network which was optimized by dynamic programming of Silander and Myllymaki(2006).   
-BSD license.
+C liblary of the Bayesian network including learning algorithm which was optimized by dynamic programming of Silander and Myllymaki(2006).   
+
+LICENSE: BSD
 
 ## Install
 You require cmake
