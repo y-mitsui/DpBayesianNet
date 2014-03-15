@@ -9,7 +9,7 @@
 /*
 	各ノードごとに取りうる全ての親パターンで学習スコアを計算する
 */
-static void getLocalScore(baysianNode *node,int numNode,int currentNode,int numLine,Associate *cHist,unsigned short parentPattern,double *scores,Associate **CPT,int numSample,int rank,int start){
+static void getLocalScore(int numValuePattern,int numNode,int currentNode,int numLine,Associate *cHist,unsigned short parentPattern,double *scores,Associate **CPT,int numSample,int rank,int start){
 	int *pattern;
 	int *nums;
 	Associate *tmp;
@@ -26,8 +26,8 @@ static void getLocalScore(baysianNode *node,int numNode,int currentNode,int numL
 					pattern[patternCt++]=cHist->keys[i*cHist->patternSize+j];
 				}
 			}
-			if(!(nums=(int*)getLAA(tmp,pattern))) nums=Calloc(int,node->numVariablePattern);
-			for(j=0;j<node->numVariablePattern;j++){
+			if(!(nums=(int*)getLAA(tmp,pattern))) nums=Calloc(int,numValuePattern);
+			for(j=0;j<numValuePattern;j++){
 				nums[j]+=((int*)cHist->array[i])[j];
 			}
 			setLAA(tmp,pattern,nums);
@@ -36,11 +36,11 @@ static void getLocalScore(baysianNode *node,int numNode,int currentNode,int numL
 		CPT[parentPattern]=makeLAA(tmp->numKeys,numLine);
 		
 		for(i=0;i<tmp->numKeys;i++){
-			double *prop=Malloc(double,node->numVariablePattern);
-			for(total=0,j=0;j<node->numVariablePattern;j++){
+			double *prop=Malloc(double,numValuePattern);
+			for(total=0,j=0;j<numValuePattern;j++){
 				total+=((int*)tmp->array[i])[j];
 			}
-			for(j=0;j<node->numVariablePattern;j++){
+			for(j=0;j<numValuePattern;j++){
 				prop[j]=(double)((int*)tmp->array[i])[j]/total;
 				if(prop[j]==0.0) prop[j]=0.00000001;
 			}			
@@ -52,21 +52,21 @@ static void getLocalScore(baysianNode *node,int numNode,int currentNode,int numL
 		total=0;
 		for(i=0;i<tmp->numKeys;i++){
 			double* prop=(double*)getLAA(CPT[parentPattern],&tmp->keys[i*tmp->patternSize]);
-			for(j=0;j<node->numVariablePattern;j++){
+			for(j=0;j<numValuePattern;j++){
 				like+=log(prop[j])*((int*)tmp->array[i])[j];
 				total+=((int*)tmp->array[i])[j];
 			}
 			free(tmp->array[i]);
 		}
 		if(like==0.0) like=-0.00000000001;
-		scores[parentPattern]=1.0/(-2*like+(numLine*(node->numVariablePattern-1))*log(numSample));//BICの逆数
+		scores[parentPattern]=1.0/(-2*like+(numLine*(numValuePattern-1))*log(numSample));//BICの逆数
 		free(pattern);
 		freeLAA(tmp);
 		free(tmp);
 	}else{
 		for(i=start;i<numNode;i++){
 			if(i!=currentNode){
-				getLocalScore(node,numNode,currentNode,numLine,cHist,parentPattern | (1<<i),scores,CPT,numSample,rank+1,i+1);
+				getLocalScore(numValuePattern,numNode,currentNode,numLine,cHist,parentPattern | (1<<i),scores,CPT,numSample,rank+1,i+1);
 			}
 		}
 	}
@@ -150,6 +150,7 @@ int *int2Number(int num){
 	*r=num;
 	return r;
 }
+/* n個の中からm個とる場合の数 */
 int combination(int n,int m){
 	double sum=1.0,sum2=1.0;
 	int i;
@@ -161,15 +162,23 @@ int combination(int n,int m){
 	}
 	return (int)(sum/sum2);
 }
-bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,bayesianNetworkOption *opt){
+
+/*
+動的計画法による学習アルゴリズム
+data:サンプリングデータ  要素数はnumSample*dimention
+numSample:サンプリングデータの数
+dimention:サンプリングデータの次元(確率変数の数)
+numValuePattern:各ノードごとの取りうる値の数
+*/
+bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,int *numValuePattern){
 	Associate *frequency;
 	int i,j,k,num;
 	int *pattern;
 	bayesianNetwork *model;
 
 	/* 分割表を作成 */
-	frequency=makeLAA(numSample,opt->numVariable);
-	pattern=Malloc(int,opt->numVariable);
+	frequency=makeLAA(numSample,dimention);
+	pattern=Malloc(int,dimention);
 	for(i=0;i<numSample;i++){
 		for(j=0;j<dimention;j++){
 			pattern[j]=data[i*dimention+j];
@@ -183,9 +192,9 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,bayesian
 		}
 	}
 	/* 条件付き頻度表を作成*/	
-	Associate **cHist=Malloc(Associate*,opt->numVariable);
-	for(i=0;i<opt->numVariable;i++){
-		cHist[i]=makeLAA(numSample,opt->numVariable);
+	Associate **cHist=Malloc(Associate*,dimention);
+	for(i=0;i<dimention;i++){
+		cHist[i]=makeLAA(numSample,dimention);
 		for(j=0;j<frequency->numKeys;j++){
 			for(k=0;k<frequency->patternSize;k++){
 				pattern[k]=(i==k) ? 0 : frequency->keys[j*frequency->patternSize+k];
@@ -194,53 +203,54 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,bayesian
 			int *cur=(int*)getLAA(cHist[i],pattern);
 			if(cur) cur[val]+=*((int*)frequency->array[j]);
 			else{
-				cur=Calloc(int,opt->node[i].numVariablePattern);
+				cur=Calloc(int,numValuePattern[i]);
 				cur[val]=*((int*)frequency->array[j]);
 			}
 			setLAA(cHist[i],pattern,cur);
 		}
 	}	
 	/* ローカルスコアを計算*/
-	Associate ***CPT=Malloc(Associate **,opt->numVariable);
-	double **localScore=Malloc(double *,opt->numVariable);
-	for(i=0;i<opt->numVariable;i++){
-		localScore[i]=Malloc(double,pow(2,opt->numVariable));
-		CPT[i]=Malloc(Associate *,pow(2,opt->numVariable));
-		for(j=0;j<opt->numVariable;j++){
-			getLocalScore(&opt->node[i],opt->numVariable,i,j,cHist[i],0,localScore[i],CPT[i],numSample,0,0);
+	Associate ***CPT=Malloc(Associate **,dimention);
+	double **localScore=Malloc(double *,dimention);
+	for(i=0;i<dimention;i++){
+		localScore[i]=Malloc(double,pow(2,dimention));
+		CPT[i]=Malloc(Associate *,pow(2,dimention));
+		for(j=0;j<dimention;j++){
+			getLocalScore(numValuePattern[i],dimention,i,j,cHist[i],0,localScore[i],CPT[i],numSample,0,0);
 		}
 	}
 	model=Malloc(bayesianNetwork,1);
 	model->CPT=CPT;
-	model->nodes=opt->node;
-	model->numNode=opt->numVariable;
-	unsigned short **bestParents=Malloc(unsigned short *,opt->numVariable);
-	for(i=0;i<opt->numVariable;i++){
-		bestParents[i]=Malloc(unsigned short,pow(2,opt->numVariable));
-		for(j=0;j<opt->numVariable;j++){
-			getBestParents(i,opt->numVariable,localScore[i],bestParents[i],0,j,0,0);
+	model->numNode=dimention;
+	model->numValuePattern=numValuePattern;
+
+	unsigned short **bestParents=Malloc(unsigned short *,dimention);
+	for(i=0;i<dimention;i++){
+		bestParents[i]=Malloc(unsigned short,pow(2,dimention));
+		for(j=0;j<dimention;j++){
+			getBestParents(i,dimention,localScore[i],bestParents[i],0,j,0,0);
 		}
 	}
 
 	
-	for(num=0,i=0;i<=opt->numVariable;i++) num+=combination(opt->numVariable,i);
-	double *scores=Malloc(double,pow(2,opt->numVariable));
-	int *leafs=Malloc(int,pow(2,opt->numVariable));
-	int *nodes=Malloc(int,opt->numVariable);
-	for(i=0;i<=opt->numVariable;i++){
-		getBestLeaf(scores,leafs,bestParents,nodes,0,localScore,opt->numVariable,i,0,0);
+	for(num=0,i=0;i<=dimention;i++) num+=combination(dimention,i);
+	double *scores=Malloc(double,pow(2,dimention));
+	int *leafs=Malloc(int,pow(2,dimention));
+	int *nodes=Malloc(int,dimention);
+	for(i=0;i<=dimention;i++){
+		getBestLeaf(scores,leafs,bestParents,nodes,0,localScore,dimention,i,0,0);
 	}
 
-	int* order=Malloc(int,opt->numVariable);
-	leafs2Order(order,leafs,opt->numVariable);
-	unsigned short *parents=Malloc(unsigned short,opt->numVariable);
-	Ord2net(parents,order,bestParents,opt->numVariable);
-	int *edge=Calloc(int,opt->numVariable*opt->numVariable);
-	net2Matrix(parents,opt->numVariable,edge);
+	int* order=Malloc(int,dimention);
+	leafs2Order(order,leafs,dimention);
+	unsigned short *parents=Malloc(unsigned short,dimention);
+	Ord2net(parents,order,bestParents,dimention);
+	int *edge=Calloc(int,dimention*dimention);
+	net2Matrix(parents,dimention,edge);
+	model->edge=edge;
 
-	//printSquereMatrix(edge,opt->numVariable*opt->numVariable);
-
-	for(i=0;i<opt->numVariable;i++){
+	for(i=0;i<dimention;i++){
+		free(bestParents[i]);
 		free(localScore[i]);
 		for(j=0;j<cHist[i]->numKeys;j++){
 			free(cHist[i]->array[j]);
@@ -248,6 +258,7 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,bayesian
 		freeLAA(cHist[i]);
 		free(cHist[i]);
 	}
+	free(bestParents);
 	free(localScore);
 	free(cHist);
 	for(i=0;i<frequency->numKeys;i++)
@@ -259,7 +270,10 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,bayesian
 	return model;
 
 }
-
+/*
+任意のノードを周辺化して状態確立を求める
+targetNode:周辺化するノード番号。負数を指定すると周辺化を行なわないため全ノードの同時確立が計算される
+*/
 static double getJointProbability(bayesianNetwork *model,int targetNode,int targetValue,int *values,int *edge,int *nodes,int numNode,int *valuePattern,int maxNode,int rank){
 	double result,prob;
 	int *vals,numParents,i,j;
@@ -291,7 +305,7 @@ FINISH:
 		return getJointProbability(model,targetNode,targetValue,values,edge,nodes,numNode+1,valuePattern,maxNode,rank+1);
 	}
 	result=0.0;
-	for(i=0;i<model->nodes[rank].numVariablePattern;i++){
+	for(i=0;i<model->numValuePattern[rank];i++){
 		valuePattern[rank]=i;
 		result+=getJointProbability(model,targetNode,targetValue,values,edge,nodes,numNode+1,valuePattern,maxNode,rank+1);
 
@@ -305,20 +319,27 @@ static double bayesianNetworkGetProbability(bayesianNetwork *model,int targetNod
 	int *nodes,*valuePattern;
 	nodes=Calloc(int,model->numNode);
 	valuePattern=Calloc(int,model->numNode);
-	double p1=getJointProbability(model,targetNode,targetValue,values,model->models[0]->edge,nodes,0,valuePattern,model->numNode,0);
+	double p1=getJointProbability(model,targetNode,targetValue,values,model->edge,nodes,0,valuePattern,model->numNode,0);
 	memset(valuePattern,0,sizeof(int)*model->numNode);
 	printf("p1:%.15lf\n",p1);
-	double p2=getJointProbability(model,-1,targetValue,values,model->models[0]->edge,nodes,0,valuePattern,model->numNode,0);
+	double p2=getJointProbability(model,-1,targetValue,values,model->edge,nodes,0,valuePattern,model->numNode,0);
 	printf("p2:%.15lf p1/p2:%.15lf\n",p2,p1/p2);
 	return p1/p2;
 }
 
-void *bayesianNetPredict(bayesianNetwork *model,int *values,int targetNode){
+/* 
+　クラス分類を行う
+　model:bayesianNetTrainによって得られたコンテキスト
+  targetNode:目的変数
+　values:説明変数の値。(エビデンス)
+  戻り値:確率が最大となるtargetNodeの値
+*/
+int bayesianNetPredict(bayesianNetwork *model,int *values,int targetNode){
 	double maxProb=0.0;
 	int maxIdx,i;
 
 	values[targetNode]=-1;
-	for(i=0;i<model->nodes[targetNode].numVariablePattern;i++){
+	for(i=0;i<model->numValuePattern[targetNode];i++){
 		double prob=bayesianNetworkGetProbability(model,targetNode,i,values);
 		printf("final prob:%.15lf\n",prob);
 		if(prob > maxProb){
@@ -326,5 +347,37 @@ void *bayesianNetPredict(bayesianNetwork *model,int *values,int targetNode){
 			maxIdx=i;
 		}
 	}
-	return int2Number(maxIdx);
+	return maxIdx;
+}
+
+static void __freeCPT(Associate **CPT,int numNode,int currentNode,unsigned short parentPattern,int numLine,int rank,int start){
+	int i;
+	if(numLine==rank){
+		for(i=0;i<CPT[parentPattern]->numKeys;i++){
+			free(CPT[parentPattern]->array[i]);
+		}
+		freeLAA(CPT[parentPattern]);
+		free(CPT[parentPattern]);
+	}
+	for(i=start;i<numNode;i++){
+		if(i!=currentNode){
+			__freeCPT(CPT,numNode,currentNode,parentPattern | (1<<i),numLine,rank+1,i+1);
+		}
+	}
+}
+static void freeCPT(Associate ***CPT,int numVariable){
+	int i,j;
+
+	for(i=0;i<numVariable;i++){
+		for(j=0;j<numVariable;j++){
+			__freeCPT(CPT[i],numVariable,i,0,j,0,0);
+		}
+		free(CPT[i]);
+	}
+}
+void bayesianNetFree(bayesianNetwork *model){
+	free(model->edge);
+	freeCPT(model->CPT,model->numNode);
+	free(model->CPT);
+	
 }

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 
 void bayesianNetPrintSquereMatrix(int *matrix,int numMatrix){
 	int width=sqrt(numMatrix);

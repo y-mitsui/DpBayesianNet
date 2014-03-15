@@ -5,7 +5,7 @@
 #include "dpBayesianNetwork.h"
 
 /*
-真の構造が B→A となるように、サンプリング
+真の構造が B→A となるように、4値をサンプリング
 */
 void setSample(int *sample,int numSample,int numVariable){
 	int i;
@@ -19,22 +19,21 @@ void setSample(int *sample,int numSample,int numVariable){
 #define NUM_NODE 2
 #define NUM_SAMPLE 120000
 int main(void){
-	baysianNode node[NUM_NODE];
-	bayesianNetworkOption opt;
+	int numVariablePattern[NUM_NODE]={4,4};
 	int *sample=Malloc(int,NUM_SAMPLE*NUM_NODE);
+
 	setSample(sample,NUM_SAMPLE,NUM_NODE);
-	memset(&node,0,sizeof(node[0])*NUM_NODE);
-	node[0].name="A";
-	node[0].numVariablePattern=4;
-	node[1].name="B";
-	node[1].numVariablePattern=4;
 
+	bayesianNetwork *model=bayesianNetTrain(sample,NUM_SAMPLE,NUM_NODE,numVariablePattern);
 
-	opt.numVariable=NUM_NODE;
-	opt.node=node;
-	bayesianNetwork *model=bayesianNetTrain(sample,NUM_SAMPLE,NUM_NODE,&opt);
-	
-	int *value=bayesianNetPredict(model,&sample[0],0);
-	printf("value:%d\n",*value);
+	bayesianNetPrintSquereMatrix(model->edge,NUM_NODE*NUM_NODE);
+
+	int predictValue=bayesianNetPredict(model,&sample[0],0);
+	printf("predict:%d\n",predictValue);
+
+	bayesianNetFree(model);
+
+	free(sample);
+	free(model);
 	return 0;
 }
