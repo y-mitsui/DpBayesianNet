@@ -4,7 +4,7 @@ DpBayesianNet
 C liblary of the Bayesian network including learning algorithm which was optimized by dynamic programming of Silander and Myllymaki(2006).   
 
 LICENSE: BSD  
-UPPER LIMIT NUMBER OF NODE:16  
+MAXIMUM NUMBER OF NODE:16  
 
 ## Install
 You require cmake
