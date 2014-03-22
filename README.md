@@ -12,7 +12,9 @@ You require cmake
 **[Case of MinGW on Windows]**  
 1.Input this following on command prompt.  
 > PATH=C:\MinGW\bin;%PATH%  
-> cmake -G "MinGW Makefiles"  
+> cmake -G "MinGW Makefiles"
+(input one more)
+> cmake -G "MinGW Makefiles"
 > mingw32-make  
 
 2.Add "libdpBayesianNet.dll.a" and "dpBayesianNetwork.h" , "laa.h" to your project.
