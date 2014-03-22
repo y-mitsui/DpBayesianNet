@@ -12,8 +12,8 @@ You require cmake
 **[Case of MinGW on Windows]**  
 1.Input this following on command prompt.  
 > PATH=C:\MinGW\bin;%PATH%  
-> cmake -G "MinGW Makefiles"
-(input one more)
+> cmake -G "MinGW Makefiles"  
+(input one more)  
 > cmake -G "MinGW Makefiles"
 > mingw32-make  
 
