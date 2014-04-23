@@ -11,7 +11,7 @@ You require cmake
 
 **[Case of FreeBSD]**  
 1.Input this following on command prompt.  
-> cmake .            # Be careful dot.  
+> cmake .           # Be careful dot.  
 > make && make install
   
   
