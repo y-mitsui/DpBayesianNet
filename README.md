@@ -9,6 +9,11 @@ MAXIMUM NUMBER OF NODE:16
 ## Install
 You require cmake
 
+**[Case of FreeBSD]**  
+1.Input this following on command prompt.  
+> cmake .  
+> make && make install
+
 **[Case of MinGW on Windows]**  
 1.Input this following on command prompt.  
 > PATH=C:\MinGW\bin;%PATH%  
