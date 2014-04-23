@@ -13,8 +13,8 @@ You require cmake
 1.Input this following on command prompt.  
 > cmake .  
 > make && make install
-
-
+  
+  
 **[Case of MinGW on Windows]**  
 1.Input this following on command prompt.  
 > PATH=C:\MinGW\bin;%PATH%  
