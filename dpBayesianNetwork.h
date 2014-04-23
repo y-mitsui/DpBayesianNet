@@ -10,7 +10,7 @@ typedef struct{
 	int numNode;		//確率変数の数
 	int *edge;		//ネットワーク構造
 	int *numValuePattern;	//各ノードごとの取りうる値の数
-	Associate ***CPT;	//条件付き確率表
+	Associate ***CPT;	//条件付確率表.
 }bayesianNetwork;
 
 
