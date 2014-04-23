@@ -6,5 +6,9 @@ SET(CMAKE_C_FLAGS "-Wall -g")
 
 ADD_LIBRARY(dpBayesianNet STATIC dpBayesianNet.c laa.c util.c)
 
-add_executable (example example.c dpBayesianNet.c laa.c util.c)
-target_link_libraries(example m)
+
+INSTALL(TARGETS dpBayesianNet ARCHIVE DESTINATION lib)
+INSTALL(FILES dpBayesianNetwork.h DESTINATION include)
+
+add_executable (example example.c)
+target_link_libraries(example m dpBayesianNet)
