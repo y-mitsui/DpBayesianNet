@@ -3,7 +3,7 @@ DpBayesianNet
 
 C liblary of the Bayesian network including learning algorithm which was optimized by dynamic programming of Silander and Myllymaki(2006).   
 
-LICENSE: Modified BSD  
+LICENSE: New BSD  
 MAXIMUM NUMBER OF NODE:16  
 
 ## Install
