@@ -10,7 +10,7 @@ MAXIMUM NUMBER OF NODE:16
 You require cmake
 
 **[Case of FreeBSD]**  
-1.Input this following on command prompt.  
+1.Input this following on shell.  
 > cmake . &nbsp;&nbsp;&nbsp;&nbsp;# (Be careful dot.)  
 > make && make install
   
