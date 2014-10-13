@@ -4,12 +4,12 @@
 C liblary of the Bayesian network including learning algorithm which was optimized by dynamic programming of Silander and Myllymaki(2006).   
 
 ## Features
-*Both learning and inference was implemented on exact algorithms
-*Cross platform
-*Scoring:BIC
-*Maximum number of node:16
-*Source code simply written.
-*License: New BSD  
+* Both learning and inference was implemented on exact algorithms
+* Cross platform
+* Scoring:BIC
+* Maximum number of node:16
+* Source code simply written.
+* License: New BSD  
 
 
 ## Install
