@@ -1,4 +1,4 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -7,7 +7,8 @@
 
 
 /*
-	Šeƒm[ƒh‚²‚Æ‚Éæ‚è‚¤‚é‘S‚Ä‚Ìeƒpƒ^[ƒ“‚ÅŠwKƒXƒRƒA‚ğŒvZ‚·‚é
+	å„ãƒãƒ¼ãƒ‰ã”ã¨ã«å–ã‚Šã†ã‚‹å…¨ã¦ã®è¦ªãƒ‘ã‚¿ãƒ¼ãƒ³ã§å­¦ç¿’ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹
+	Calculate local score on all parent patterns for every node.
 */
 static void getLocalScore(int numValuePattern,int numNode,int currentNode,int numLine,Associate *cHist,unsigned short parentPattern,double *scores,Associate **CPT,int numSample,int rank,int start){
 	int *pattern;
@@ -17,8 +18,12 @@ static void getLocalScore(int numValuePattern,int numNode,int currentNode,int nu
 	int i,j,patternCt,total;
 
 	if(numLine==rank){
-		/* qƒm[ƒhcurrentNode‚É‚¨‚¯‚éeƒpƒ^[ƒ“edge‚É‚Â‚¢‚ÄAğŒ•t‚«Šm—¦‚ğŒvZ‚·‚é */
-		tmp=makeLAA(cHist->numKeys,numLine);	//e’lƒpƒ^[ƒ“‚Æqƒm[ƒh’l‚²‚Æ‚Ì‘”
+		/* 
+			
+			è¦ªãƒ‘ã‚¿ãƒ¼ãƒ³(å¤‰æ•°edge)ã‚’æ¡ä»¶ã«ã¨ã‚‹å­ãƒãƒ¼ãƒ‰(å¤‰æ•°currentNode)ã®æ¡ä»¶ä»˜ãç¢ºç‡ã‚’è¨ˆç®—ã™ã‚‹
+			Calculation of conditional probability of child node(currentNode)  which conditioned parent pattern(edge).
+		*/
+		tmp=makeLAA(cHist->numKeys,numLine);	//è¦ªå€¤ãƒ‘ã‚¿ãƒ¼ãƒ³ã¨å­ãƒãƒ¼ãƒ‰å€¤ã”ã¨ã®ç·æ•°ã‚’cHistã‹ã‚‰é›†è¨ˆã™ã‚‹
 		pattern=Calloc(int,numNode);
 		for(i=0;i<cHist->numKeys;i++){	
 			for(patternCt=0,j=0;j<numNode;j++){
@@ -32,7 +37,7 @@ static void getLocalScore(int numValuePattern,int numNode,int currentNode,int nu
 			}
 			setLAA(tmp,pattern,nums);
 		}
-		/* ğŒ•t‚«Šm—§‚ğŒvZ*/
+		/* æ¡ä»¶ä»˜ãç¢ºç«‹ã‚’è¨ˆç®—  Calculation of conditional probability */
 		CPT[parentPattern]=makeLAA(tmp->numKeys,numLine);
 		
 		for(i=0;i<tmp->numKeys;i++){
@@ -47,7 +52,7 @@ static void getLocalScore(int numValuePattern,int numNode,int currentNode,int nu
 			setLAA(CPT[parentPattern],&tmp->keys[i*tmp->patternSize],prop);
 		}
 		
-		/* –Ş“x‚ğŒvZ */
+		/* å°¤åº¦ã‚’è¨ˆç®— Calculation of likelihood  */
 		like=0.0;
 		total=0;
 		for(i=0;i<tmp->numKeys;i++){
@@ -59,7 +64,7 @@ static void getLocalScore(int numValuePattern,int numNode,int currentNode,int nu
 			free(tmp->array[i]);
 		}
 		if(like==0.0) like=-0.00000000001;
-		scores[parentPattern]=1.0/(-2*like+(numLine*(numValuePattern-1))*log(numSample));//BIC‚Ì‹t”
+		scores[parentPattern]=1.0/(-2*like+(numLine*(numValuePattern-1))*log(numSample));//BICã®é€†æ•°
 		free(pattern);
 		freeLAA(tmp);
 		free(tmp);
@@ -150,7 +155,7 @@ int *int2Number(int num){
 	*r=num;
 	return r;
 }
-/* nŒÂ‚Ì’†‚©‚çmŒÂ‚Æ‚éê‡‚Ì” */
+/* nå€‹ã®ä¸­ã‹ã‚‰må€‹ã¨ã‚‹å ´åˆã®æ•° */
 int combination(int n,int m){
 	double sum=1.0,sum2=1.0;
 	int i;
@@ -164,11 +169,11 @@ int combination(int n,int m){
 }
 
 /*
-“®“IŒv‰æ–@‚É‚æ‚éŠwKƒAƒ‹ƒSƒŠƒYƒ€
-data:ƒTƒ“ƒvƒŠƒ“ƒOƒf[ƒ^  —v‘f”‚ÍnumSample*dimention
-numSample:ƒTƒ“ƒvƒŠƒ“ƒOƒf[ƒ^‚Ì”
-dimention:ƒTƒ“ƒvƒŠƒ“ƒOƒf[ƒ^‚ÌŸŒ³(Šm—¦•Ï”‚Ì”)
-numValuePattern:Šeƒm[ƒh‚²‚Æ‚Ìæ‚è‚¤‚é’l‚Ì”
+å‹•çš„è¨ˆç”»æ³•ã«ã‚ˆã‚‹å­¦ç¿’ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ 
+data:ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿  è¦ç´ æ•°ã¯numSample*dimention
+numSample:ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿ã®æ•°
+dimention:ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿ã®æ¬¡å…ƒ(ç¢ºç‡å¤‰æ•°ã®æ•°)
+numValuePattern:å„ãƒãƒ¼ãƒ‰ã”ã¨ã®å–ã‚Šã†ã‚‹å€¤ã®æ•°
 */
 bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,int *numValuePattern){
 	Associate *frequency;
@@ -176,7 +181,7 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,int *num
 	int *pattern;
 	bayesianNetwork *model;
 
-	/* •ªŠ„•\‚ğì¬ */
+	/* åˆ†å‰²è¡¨ã‚’ä½œæˆ */
 	frequency=makeLAA(numSample,dimention);
 	pattern=Malloc(int,dimention);
 	for(i=0;i<numSample;i++){
@@ -191,7 +196,7 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,int *num
 			(*cur)++;
 		}
 	}
-	/* ğŒ•t‚«•p“x•\‚ğì¬*/	
+	/* æ¡ä»¶ä»˜ãé »åº¦è¡¨ã‚’ä½œæˆ  Todo:å‘¨è¾ºåŒ–ã•ã‚Œã¦ã„ã‚‹ã‹ç¢ºèª*/	
 	Associate **cHist=Malloc(Associate*,dimention);
 	for(i=0;i<dimention;i++){
 		cHist[i]=makeLAA(numSample,dimention);
@@ -209,7 +214,7 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,int *num
 			setLAA(cHist[i],pattern,cur);
 		}
 	}	
-	/* ƒ[ƒJƒ‹ƒXƒRƒA‚ğŒvZ*/
+	/* ãƒ­ãƒ¼ã‚«ãƒ«ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—*/
 	Associate ***CPT=Malloc(Associate **,dimention);
 	double **localScore=Malloc(double *,dimention);
 	for(i=0;i<dimention;i++){
@@ -271,8 +276,8 @@ bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,int *num
 
 }
 /*
-”CˆÓ‚Ìƒm[ƒh‚ğü•Ó‰»‚µ‚Äó‘ÔŠm—§‚ğ‹‚ß‚é
-targetNode:ü•Ó‰»‚·‚éƒm[ƒh”Ô†B•‰”‚ğw’è‚·‚é‚Æü•Ó‰»‚ğs‚È‚í‚È‚¢‚½‚ß‘Sƒm[ƒh‚Ì“¯Šm—§‚ªŒvZ‚³‚ê‚é
+ä»»æ„ã®ãƒãƒ¼ãƒ‰ã‚’å‘¨è¾ºåŒ–ã—ã¦çŠ¶æ…‹ç¢ºç«‹ã‚’æ±‚ã‚ã‚‹
+targetNode:å‘¨è¾ºåŒ–ã™ã‚‹ãƒãƒ¼ãƒ‰ç•ªå·ã€‚è² æ•°ã‚’æŒ‡å®šã™ã‚‹ã¨å‘¨è¾ºåŒ–ã‚’è¡Œãªã‚ãªã„ãŸã‚å…¨ãƒãƒ¼ãƒ‰ã®åŒæ™‚ç¢ºç«‹ãŒè¨ˆç®—ã•ã‚Œã‚‹
 */
 static double getJointProbability(bayesianNetwork *model,int targetNode,int targetValue,int *values,int *edge,int *nodes,int numNode,int *valuePattern,int maxNode,int rank){
 	double result,prob;
@@ -313,7 +318,7 @@ FINISH:
 	return result;
 }
 /* 
-—ñ‹“–@‚É‚æ‚éŠm—¦„˜_
+åˆ—æŒ™æ³•ã«ã‚ˆã‚‹ç¢ºç‡æ¨è«–
 */
 static double bayesianNetworkGetProbability(bayesianNetwork *model,int targetNode,int targetValue,int *values){
 	int *nodes,*valuePattern;
@@ -326,11 +331,11 @@ static double bayesianNetworkGetProbability(bayesianNetwork *model,int targetNod
 }
 
 /* 
-@ƒNƒ‰ƒX•ª—Ş‚ğs‚¤
-@model:bayesianNetTrain‚É‚æ‚Á‚Ä“¾‚ç‚ê‚½ƒRƒ“ƒeƒLƒXƒg
-  targetNode:–Ú“I•Ï”
-@values:à–¾•Ï”‚Ì’lB(ƒGƒrƒfƒ“ƒX)
-  –ß‚è’l:Šm—¦‚ªÅ‘å‚Æ‚È‚étargetNode‚Ì’l
+ã€€ã‚¯ãƒ©ã‚¹åˆ†é¡ã‚’è¡Œã†
+ã€€model:bayesianNetTrainã«ã‚ˆã£ã¦å¾—ã‚‰ã‚ŒãŸã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+  targetNode:ç›®çš„å¤‰æ•°
+ã€€values:èª¬æ˜å¤‰æ•°ã®å€¤ã€‚(ã‚¨ãƒ“ãƒ‡ãƒ³ã‚¹)
+  æˆ»ã‚Šå€¤:ç¢ºç‡ãŒæœ€å¤§ã¨ãªã‚‹targetNodeã®å€¤
 */
 int bayesianNetPredict(bayesianNetwork *model,int *values,int targetNode){
 	double maxProb=0.0;

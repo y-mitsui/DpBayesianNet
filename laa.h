@@ -1,4 +1,4 @@
-#ifndef LAA_H_
+﻿#ifndef LAA_H_
 #define LAA_H_
 
 typedef struct{

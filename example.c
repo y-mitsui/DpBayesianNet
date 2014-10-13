@@ -1,11 +1,13 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "dpBayesianNetwork.h"
 
 /*
-^‚Ì\‘¢‚ª B¨A ‚Æ‚È‚é‚æ‚¤‚ÉA4’l‚ğƒTƒ“ƒvƒŠƒ“ƒO
+çœŸã®æ§‹é€ ãŒ Bâ†’A ã¨ãªã‚‹ã‚ˆã†ã«ã€4ãƒ‘ã‚¿ãƒ¼ãƒ³(0ï½3)ã‚’ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°
+Sample 4 pattern values so that true structure is B â†’ A.
+P(A = B | B < 2)=0.8
 */
 void setSample(int *sample,int numSample,int numVariable){
 	int i;

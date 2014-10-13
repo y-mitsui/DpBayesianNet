@@ -1,4 +1,4 @@
-#ifndef DP_BAYESIAN_NETWORK_H_
+ï»¿#ifndef DP_BAYESIAN_NETWORK_H_
 #define DP_BAYESIAN_NETWORK_H_
 
 #include "laa.h"
@@ -7,34 +7,34 @@
 #define Calloc(type,n) (type *)calloc(1,(n)*sizeof(type))
 
 typedef struct{
-	int numNode;		//Šm—¦•Ï”‚Ì”
-	int *edge;		//ƒlƒbƒgƒ[ƒN\‘¢
-	int *numValuePattern;	//Šeƒm[ƒh‚²‚Æ‚Ìæ‚è‚¤‚é’l‚Ì”
-	Associate ***CPT;	//ğŒ•tŠm—¦•\.
+	int numNode;		//ç¢ºç‡å¤‰æ•°ã®æ•° number of random variable
+	int *edge;		//ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯æ§‹é€   structure of network
+	int *numValuePattern;	//å„ãƒãƒ¼ãƒ‰ã”ã¨ã®å–ã‚Šã†ã‚‹å€¤ã®æ•° number of pattern of value for every node
+	Associate ***CPT;	//æ¡ä»¶ä»˜ç¢ºç‡è¡¨. conditional probability table
 }bayesianNetwork;
 
 
 /* bayesianNetTrain
-“®“IŒv‰æ–@‚É‚æ‚éŠwK
-data:ƒTƒ“ƒvƒŠƒ“ƒOƒf[ƒ^  —v‘f”‚ÍnumSample*dimention
-numSample:ƒTƒ“ƒvƒŠƒ“ƒOƒf[ƒ^‚Ì”
-dimention:ƒTƒ“ƒvƒŠƒ“ƒOƒf[ƒ^‚ÌŸŒ³(Šm—¦•Ï”‚Ì”)
-numValuePattern:Šeƒm[ƒh‚²‚Æ‚Ìæ‚è‚¤‚é’l‚Ì”
-–ß‚è’l:ŠwKŒ‹‰Ê
+å‹•çš„è¨ˆç”»æ³•ã«ã‚ˆã‚‹å­¦ç¿’    Train using dynamic programming 
+data:ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿ã€‚è¦ç´ æ•°ã¯numSample*dimention    Sampling data. Number of elements is numSample*dimention.
+numSample:ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿ã®æ•°    Number of sampling data.
+dimention:ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿ã®æ¬¡å…ƒ(ç¢ºç‡å¤‰æ•°ã®æ•°)   Dimention of sampling data.(Number of random variables)
+numValuePattern:å„ãƒãƒ¼ãƒ‰ã”ã¨ã®å–ã‚Šã†ã‚‹å€¤ã®æ•°   Number of pattern of value for each node
+æˆ»ã‚Šå€¤:å­¦ç¿’çµæœ     Return value: Result trained.
 */
 bayesianNetwork* bayesianNetTrain(int *data,int numSample,int dimention,int *numValuePattern);
 
 /* bayesianNetPredict
-ƒNƒ‰ƒX•ª—Ş‚ğs‚¤
-model:bayesianNetTrain‚É‚æ‚Á‚Ä“¾‚ç‚ê‚½ƒRƒ“ƒeƒLƒXƒg
-targetNode:–Ú“I•Ï”
-values:à–¾•Ï”‚Ì’lB(ƒGƒrƒfƒ“ƒX)
-–ß‚è’l:Šm—¦‚ªÅ‘å‚Æ‚È‚étargetNode‚ªæ‚é’l
+ã‚¯ãƒ©ã‚¹åˆ†é¡ã‚’è¡Œã†     Classification
+model:bayesianNetTrainã«ã‚ˆã£ã¦å¾—ã‚‰ã‚ŒãŸã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ   Context data which get by bayesianNetTrain
+targetNode:ç›®çš„å¤‰æ•°   Target variable.
+values:èª¬æ˜å¤‰æ•°ã®å€¤ã€‚(ã‚¨ãƒ“ãƒ‡ãƒ³ã‚¹)   Evidence
+æˆ»ã‚Šå€¤:ç¢ºç‡ãŒæœ€å¤§ã¨ãªã‚‹targetNodeãŒå–ã‚‹å€¤      Return value:Value which take the biggest probability.
 */
 int bayesianNetPredict(bayesianNetwork *model,int *values,int targetNode);
 
 /* bayesianNetFree
-ŠwKŒ‹‰Ê‚ÌƒŠƒŠ[ƒX */
+å­¦ç¿’çµæœã®ãƒªãƒªãƒ¼ã‚¹ */
 void bayesianNetFree(bayesianNetwork *model);
 
 int combination(int n,int m);

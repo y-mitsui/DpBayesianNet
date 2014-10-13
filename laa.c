@@ -1,4 +1,4 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -6,8 +6,8 @@
 #include "laa.h"
 
 /*
-˜A‘z”z—ñ
-’TõŒø—¦‚ÍüŒ`
+é€£æƒ³é…åˆ—
+æ¢ç´¢åŠ¹ç‡ã¯ç·šå½¢
 */
 
 Associate* makeLAA(int arraySize,int patternSize){
