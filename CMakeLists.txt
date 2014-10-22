@@ -11,4 +11,4 @@ INSTALL(TARGETS dpBayesianNet ARCHIVE DESTINATION lib)
 INSTALL(FILES dpBayesianNetwork.h DESTINATION include)
 
 add_executable (example example.c)
-target_link_libraries(example m dpBayesianNet)
+target_link_libraries(example dpBayesianNet m)
