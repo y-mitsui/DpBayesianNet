@@ -4,11 +4,16 @@
 C liblary of the Bayesian network including learning algorithm which was optimized by dynamic programming of Silander and Myllymaki(2006).   
 
 ## Features
-* Improve parformance
+* Both learning and inference was implemented on exact algorithms
+* Cross platform
+* Scoring:BIC
+* Maximum number of node:16
+* Source code simply written.
+* License: New BSD  
 
 
 ## Install
-You require cmake and GSL
+You require cmake
 
 **[Case of Linux]**  
 1. Input this following on shell.  
@@ -25,7 +30,7 @@ You require cmake and GSL
     $ cmake -G "MinGW Makefiles"
     $  mingw32-make
 
-2. Add "libdpgmm.a" and "dpgmm.h" , "laa.h" to your project.
+2. Add "libdpBayesianNet.a" and "dpBayesianNetwork.h" , "laa.h" to your project.
 
 ## Usage
-Read example.c
+Read dpBayesianNetwork.h and example.c
