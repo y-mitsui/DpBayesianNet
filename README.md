@@ -22,7 +22,7 @@ You require cmake
     $ make && sudo make install
 
 **[Case of MinGW on Windows]**  
-1. Input this following on command prompt.
+[1] Input this following on command prompt.
 
     $ PATH=C:\MinGW\bin;%PATH%
     $ cmake -G "MinGW Makefiles"
@@ -30,7 +30,7 @@ You require cmake
     $ cmake -G "MinGW Makefiles"
     $  mingw32-make
 
-2. Add "libdpBayesianNet.a" and "dpBayesianNetwork.h" , "laa.h" to your project.
+[2] Add "libdpBayesianNet.a" and "dpBayesianNetwork.h" , "laa.h" to your project.
 
 ## Usage
 Read dpBayesianNetwork.h and example.c
