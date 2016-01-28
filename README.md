@@ -14,7 +14,7 @@ C liblary of the Bayesian network including learning algorithm which was optimiz
 
 ## Install
 DpBayesianNet uses the following dependencies:
-cmake
+* cmake
 
 **[Case of Linux]**  
 1. Input this following on shell.  
