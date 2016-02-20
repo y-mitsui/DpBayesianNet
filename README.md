@@ -8,7 +8,6 @@ C liblary of the Bayesian network including learning algorithm which was optimiz
 * Cross platform
 * Scoring:BIC
 * Maximum number of node:16
-* Source code simply written.
 * License: New BSD  
 
 
