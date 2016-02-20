@@ -19,7 +19,7 @@ DpBayesianNet uses the following dependencies:
 **[Case of Linux]**  
 1. Input this following on shell.  
 
-    $ cmake .     #(Be careful dot.)
+    $ cmake .    
     $ make && sudo make install
 
 **[Case of MinGW on Windows]**  
